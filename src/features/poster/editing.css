@@ -1,0 +1,294 @@
+/*
+ * Editor chrome. None of it may reach a print or a PNG.
+ *
+ * It is switched off by an attribute on the poster root rather than unmounted, because flipping
+ * an attribute is synchronous while a React re-render would race the screenshot. That means every
+ * control has to be absolutely positioned: anything in normal flow would shift the layout the
+ * moment it was hidden, and the page is tuned to the pixel.
+ */
+
+.poster:not([data-mode='edit']) .edit-only {
+  display: none !important;
+}
+
+/* A closure does not have to state a reason. An empty line would still occupy the panel and push
+   ZÁRVA off centre, so in the output it collapses entirely; while editing it stays reachable, but
+   absolutely positioned, so the notice sits in the same place in both. */
+.poster:not([data-mode='edit']) .closed-note:empty {
+  display: none;
+}
+
+.poster[data-mode='edit'] .closed-panel {
+  position: relative;
+}
+
+.poster[data-mode='edit'] .closed-note:empty {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 7px;
+}
+
+@media print {
+  .edit-only {
+    display: none !important;
+  }
+}
+
+/* ------------------------------------------------------------ editable text -- */
+
+.poster[data-mode='edit'] [data-editable] {
+  outline: none;
+  border-radius: 2px;
+  cursor: text;
+  transition:
+    background-color 0.12s ease,
+    box-shadow 0.12s ease;
+}
+
+.poster[data-mode='edit'] [data-editable]:hover {
+  background: rgba(139, 78, 35, 0.09);
+}
+
+.poster[data-mode='edit'] [data-editable]:focus {
+  background: rgba(139, 78, 35, 0.14);
+  box-shadow: 0 0 0 2px rgba(139, 78, 35, 0.35);
+}
+
+/* An emptied field still needs to be findable and clickable. */
+.poster[data-mode='edit'] [data-editable]:empty::before {
+  content: attr(data-placeholder);
+  opacity: 0.4;
+}
+
+/* --------------------------------------------------------------- controls -- */
+
+.edit-only {
+  position: absolute;
+  z-index: 20;
+  font-family: var(--font-text);
+  font-weight: 600;
+  border: 0;
+  border-radius: 999px;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.12s ease;
+}
+
+.edit-only:disabled {
+  cursor: not-allowed;
+  opacity: 0 !important;
+}
+
+.day:hover .edit-only:not(:disabled):not(.price-picker),
+.edit-only:focus-visible,
+.header:hover .edit-only:not(:disabled),
+.footer:hover .edit-only:not(:disabled) {
+  opacity: 1;
+}
+
+.dish-add,
+.dish-remove {
+  width: 22px;
+  height: 22px;
+  font-size: 16px;
+  line-height: 1;
+  color: var(--paper-warm);
+  background: var(--olive-600);
+}
+
+.dish-remove {
+  right: -44px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.dish-add {
+  right: -44px;
+  top: 100%;
+  margin-top: 4px;
+  background: var(--green-700);
+}
+
+.dish-add:hover,
+.dish-remove:hover {
+  background: var(--rust-600);
+}
+
+/* The dish row is the anchor for its own delete button. Position alone changes no geometry. */
+.poster[data-mode='edit'] .dish-row {
+  position: relative;
+}
+
+.day-closed-toggle {
+  left: 50%;
+  top: 60px;
+  transform: translateX(-50%);
+  padding: 3px 12px;
+  font-size: 12px;
+  letter-spacing: 0.6px;
+  color: var(--paper-warm);
+  background: var(--olive-600);
+  white-space: nowrap;
+}
+
+/* The last day sits against the bottom of the page, where a toggle hung below its label lands on
+   the left photo — invisible against the image, and unclickable because the photo takes the
+   pointer events. It goes above its label instead; there is nothing but empty column up there. */
+.day:last-of-type .day-closed-toggle {
+  top: auto;
+  bottom: 60px;
+}
+
+.day-closed-toggle[aria-pressed='true'] {
+  background: var(--rust-600);
+}
+
+/* A public holiday is information, not just a control, so it does not wait for a hover — you
+   should see it the moment you step onto the week. Still edit-only: the display:none rules above
+   keep it out of a print and a PNG. */
+.day-closed-toggle--holiday {
+  background: var(--rust-600);
+  opacity: 1;
+}
+
+.day-closed-toggle--holiday:hover {
+  background: var(--green-700);
+}
+
+.photo-pick {
+  top: 1168px;
+  padding: 6px 14px;
+  font-size: 13px;
+  color: var(--paper-warm);
+  background: rgba(38, 64, 30, 0.92);
+  white-space: nowrap;
+}
+
+.photo-pick--left {
+  left: 30px;
+}
+
+.photo-pick--right {
+  left: 646px;
+}
+
+/* A path that points at a file not yet copied next to the HTML. Visible only while editing. */
+.poster[data-mode='edit'] .photo[data-broken='true'] {
+  outline: 2px dashed var(--rust-600);
+  outline-offset: -6px;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  opacity: 0;
+}
+
+/* ------------------------------------------------------------- week nav -- */
+
+/* Stepping the week by hand means retyping five date parts, so the date line gets its own
+   controls. A container rather than a button, so it resets the pill styling above. */
+.week-nav {
+  left: 50%;
+  top: 160px;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 6px;
+  background: none;
+  border-radius: 0;
+}
+
+.week-nav button {
+  font-family: var(--font-text);
+  font-weight: 600;
+  font-size: 12px;
+  letter-spacing: 0.4px;
+  padding: 4px 12px;
+  border: 0;
+  border-radius: 999px;
+  color: var(--paper-warm);
+  background: var(--olive-600);
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.week-nav button:hover {
+  background: var(--rust-600);
+}
+
+/* ---------------------------------------------------------- price picker -- */
+
+/* Shown by hovering the price itself, not the day — hence the exclusion from the day-hover rule
+   above. One horizontal row anchored to its own row, so it can never open past the bottom of the
+   page, which the poster would clip. It sits left of the price so the value it replaces stays
+   readable, and carries its own paper background to mask the dish name beneath it. */
+.price-picker {
+  right: 78px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  gap: 4px;
+  padding: 3px;
+  border-radius: 6px;
+  background: var(--paper);
+  box-shadow: 0 2px 10px rgba(27, 21, 16, 0.22);
+  z-index: 25;
+  pointer-events: none;
+}
+
+/* The picker sits clear of the price so the value it replaces stays readable, which leaves a gap
+   the pointer has to cross to reach the pills — and crossing it used to hover neither, so the
+   picker vanished on the way. An invisible extension of the picker spans that gap, making the
+   hover continuous. The price is lifted above it so clicking into the field still works. */
+.price-picker::after {
+  content: '';
+  position: absolute;
+  left: 100%;
+  top: -5px;
+  bottom: -5px;
+  width: 86px;
+}
+
+.poster[data-mode='edit'] .dish-price {
+  position: relative;
+  z-index: 26;
+}
+
+.poster[data-mode='edit'] .dish-row:has(.dish-price:hover) .price-picker,
+.poster[data-mode='edit'] .menu-row:has(.dish-price:hover) .price-picker,
+.poster[data-mode='edit'] .price-picker:hover {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.price-pill {
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+  padding: 3px 9px;
+  border: 0;
+  border-radius: 4px;
+  font-family: var(--font-text);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  color: var(--paper-warm);
+  background: var(--olive-600);
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.price-pill:hover {
+  background: var(--rust-600);
+}
+
+.price-pill-value {
+  font-size: 10px;
+  opacity: 0.75;
+}

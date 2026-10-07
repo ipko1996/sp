@@ -1,0 +1,43 @@
+{
+  "name": "small-postrr",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "predev": "node scripts/inline-assets.ts",
+    "dev": "vite",
+    "prebuild": "node scripts/inline-assets.ts",
+    "build": "vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "assets": "node scripts/inline-assets.ts",
+    "verify": "node scripts/verify.ts"
+  },
+  "dependencies": {
+    "html-to-image": "^1.11.13",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^24.13.3",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.7",
+    "@vitejs/plugin-react": "^6.1.1",
+    "eslint": "^10.11.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-react-refresh": "^0.5.7",
+    "playwright": "^1.63.0",
+    "prettier": "^3.9.8",
+    "typescript": "~6.0.2",
+    "typescript-eslint": "^8.70.0",
+    "vite": "^8.3.0",
+    "vite-plugin-singlefile": "^2.3.3"
+  },
+  "description": "Zóna Étterem weekly menu poster — one HTML file you edit in place, print to A4, or save as PNG."
+}

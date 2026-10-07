@@ -1,0 +1,268 @@
+/* The shell around the poster. Everything here is screen-only — print.css takes it apart. */
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: #2a2a28;
+  font-family: 'Oswald', system-ui, sans-serif;
+  color: #f3efe2;
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+}
+
+/* ---------------------------------------------------------------- toolbar -- */
+
+.toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: #1f1f1d;
+  border-bottom: 1px solid #3a3a36;
+}
+
+.toolbar-title {
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  margin-right: 8px;
+}
+
+.toolbar-group {
+  display: flex;
+  gap: 2px;
+  padding: 2px;
+  background: #2a2a28;
+  border-radius: 8px;
+}
+
+.toolbar-spacer {
+  flex: 1;
+}
+
+.toolbar-warning {
+  font-size: 13px;
+  color: #e8a87c;
+  margin-right: 4px;
+}
+
+.toolbar button {
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 7px 14px;
+  border: 0;
+  border-radius: 6px;
+  background: #3a3a36;
+  color: #f3efe2;
+  cursor: pointer;
+}
+
+.toolbar button:hover:not(:disabled) {
+  background: #4a4a44;
+}
+
+.toolbar button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.toolbar button.is-active {
+  background: #53683a;
+}
+
+.toolbar button.toolbar-primary {
+  background: #53683a;
+}
+
+.toolbar button.toolbar-primary:hover:not(:disabled) {
+  background: #6e8244;
+}
+
+.toolbar button.toolbar-ghost {
+  background: transparent;
+  color: #a8a49a;
+}
+
+.toolbar button.toolbar-ghost:hover {
+  background: #3a3a36;
+  color: #f3efe2;
+}
+
+/* ----------------------------------------------------------------- notice -- */
+
+.notice {
+  position: sticky;
+  top: 52px;
+  z-index: 40;
+  margin: 10px auto 0;
+  padding: 9px 16px;
+  max-width: 720px;
+  border-radius: 8px;
+  background: #3d4a2a;
+  border: 1px solid #53683a;
+  font-size: 13.5px;
+  text-align: center;
+}
+
+/* ------------------------------------------------------------------ stage -- */
+
+.workspace {
+  flex: 1;
+  display: flex;
+  align-items: stretch;
+  min-height: 0;
+}
+
+/* ------------------------------------------------------------ type panel -- */
+
+.types-panel {
+  flex: none;
+  width: 230px;
+  padding: 20px 16px;
+  border-right: 1px solid #3a3a36;
+  overflow-y: auto;
+}
+
+.types-title {
+  margin: 0 0 4px;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+.types-hint {
+  margin: 0 0 14px;
+  font-size: 11.5px;
+  line-height: 1.45;
+  color: #a8a49a;
+}
+
+.types-list {
+  list-style: none;
+  margin: 0 0 8px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.types-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.types-row--fixed {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid #3a3a36;
+}
+
+.types-panel input {
+  min-width: 0;
+  padding: 6px 8px;
+  border: 1px solid #3a3a36;
+  border-radius: 6px;
+  background: #242422;
+  color: #f3efe2;
+  font-family: inherit;
+  font-size: 13px;
+}
+
+.types-panel input:focus {
+  outline: none;
+  border-color: #53683a;
+}
+
+.types-name {
+  flex: 1;
+}
+
+.types-name--fixed {
+  flex: 1;
+  font-size: 13px;
+  font-weight: 600;
+  color: #a8a49a;
+}
+
+.types-price {
+  width: 62px;
+  text-align: right;
+}
+
+.types-remove,
+.types-add {
+  font-family: inherit;
+  border: 0;
+  border-radius: 6px;
+  background: #3a3a36;
+  color: #f3efe2;
+  cursor: pointer;
+}
+
+.types-remove {
+  width: 24px;
+  height: 24px;
+  flex: none;
+  font-size: 14px;
+  line-height: 1;
+}
+
+.types-remove:hover {
+  background: #8b4e23;
+}
+
+.types-add {
+  width: 100%;
+  padding: 7px;
+  font-size: 12.5px;
+  font-weight: 500;
+}
+
+.types-add:hover {
+  background: #4a4a44;
+}
+
+.stage {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 24px 32px 48px;
+  overflow: auto;
+}
+
+.sheet {
+  transform-origin: top left;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.45);
+}
+
+.toolbar button.toolbar-danger {
+  background: #8b4e23;
+}
+
+.toolbar button.toolbar-danger:hover {
+  background: #a35d2a;
+}
+
+.toolbar-zoom {
+  font-size: 12px;
+  color: #a8a49a;
+  min-width: 38px;
+}

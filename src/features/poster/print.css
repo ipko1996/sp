@@ -1,0 +1,91 @@
+/*
+ * Printing targets A4, edge to edge.
+ *
+ * The poster is 842x1264px — a 1.50 proportion, where A4 is 1.41 — so it cannot be undistorted,
+ * uncropped and full-bleed all at once. Cropping is the worst of the three: filling the width
+ * leaves 69px of height over, and there is nothing expendable at either end — taking it off the
+ * top cuts the logo, off the bottom halves the Facebook bar.
+ *
+ * So the page is filled by scaling the axes separately: 0.94264 across, 0.88805 down. Everything
+ * comes out 6.15% wider relative to its height, which makes the badge and the logo ring ellipses
+ * rather than circles, by about 10px in 176. That is the price of the ticket and the photos
+ * actually reaching the paper's edge, the way the design draws them.
+ *
+ * Only printing is affected. The PNG export captures the poster on screen, undistorted at
+ * 842x1264. To go back to an undistorted print with ~6mm of paper down each side, put back a
+ * single uniform `scale(0.888)` with `margin-left: 6.1mm`.
+ */
+
+@page {
+  size: A4;
+  margin: 0;
+}
+
+@media print {
+  html,
+  body {
+    width: 210mm;
+    height: 297mm;
+    margin: 0;
+    padding: 0;
+    background: var(--paper);
+  }
+
+  /* The shell exists to frame the poster on screen; in print it must not take up space or
+     impose a scroll box that would spill onto a second page. */
+  .app,
+  .workspace,
+  .stage,
+  .sheet-frame {
+    display: block;
+    position: static;
+    width: auto;
+    min-height: 0;
+    height: auto;
+    margin: 0;
+    padding: 0;
+    overflow: visible;
+    background: none;
+  }
+
+  .sheet-frame {
+    width: auto !important;
+    height: auto !important;
+  }
+
+  .toolbar,
+  .notice,
+  .types-panel {
+    display: none !important;
+  }
+
+  .sheet {
+    width: 210mm;
+    height: 297mm;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    box-shadow: none;
+    background: var(--paper);
+    /* The on-screen zoom must not reach the paper. */
+    transform: none !important;
+  }
+
+  .poster {
+    transform: scale(0.94264, 0.88805);
+    transform-origin: top left;
+    box-shadow: none;
+  }
+
+  /* Without this Chrome drops every background it painted, and the poster prints as white
+     paper with floating text. The sheet is in the list because it carries the paper colour
+     out to the edges of the page. */
+  html,
+  body,
+  .sheet,
+  .poster,
+  .poster * {
+    print-color-adjust: exact !important;
+    -webkit-print-color-adjust: exact !important;
+  }
+}

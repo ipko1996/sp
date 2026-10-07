@@ -1,0 +1,591 @@
+/*
+ * Layout is expressed in absolute pixels on a fixed 842x1264 canvas, matching
+ * the coordinates measured off the reference poster. The one flexible part is
+ * the day list: rows have a fixed pitch, and the space left over is distributed
+ * between day blocks, which is what lets a day carry 3-5 dishes without the
+ * page changing height.
+ */
+
+:root {
+  /* Paper */
+  --paper: #fdf5ec;
+  --paper-warm: #f3efe2;
+
+  /* Greens, darkest to lightest */
+  --green-900: #1b2b14;
+  --green-800: #21331a;
+  --green-700: #26401e;
+  --green-badge: #23391b;
+  --olive-600: #475626;
+
+  /* Foliage */
+  --leaf-600: #4f6436;
+  --leaf-500: #53683a;
+  --leaf-400: #5e7239;
+  --leaf-300: #6e8244;
+
+  /* Brush wash behind the day labels */
+  --wash-100: #efe7d7;
+  --wash-200: #eae0cc;
+  --wash-300: #efe8d9;
+
+  /* Ink and rules */
+  --ink: #1b1510;
+  --rust-600: #8b4e23;
+  --ink-muted: #6e6656;
+  --rule-200: #dad4c6;
+  --rule-400: var(--rule-400);
+
+  /* The one colour that is not ours to choose */
+  --brand-facebook: #1b63d8;
+  --brand-facebook-glyph: #ffffff;
+
+  --font-display: 'Big Shoulders Display', 'Oswald', sans-serif;
+  --font-text: 'Oswald', 'DejaVu Sans Condensed', sans-serif;
+
+  --divider-x: 192px;
+  --dish-x: 218px;
+  --dish-right: 776px;
+  --row-h: 28px;
+}
+
+/* ------------------------------------------------------------- artwork -- */
+/* SVG artwork takes its colours from the palette rather than carrying its own
+   hex codes, so the whole poster can be recoloured from :root alone. */
+
+.decor-branch .branch-stem,
+.decor-branch .branch-outline {
+  color: var(--leaf-600);
+}
+.decor-branch .branch-solid {
+  color: var(--leaf-500);
+}
+.svg-defs {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+.decor-parsley .parsley-dark {
+  fill: var(--leaf-400);
+}
+.decor-parsley .parsley-light {
+  fill: var(--leaf-300);
+}
+.decor-parsley .parsley-stem {
+  stroke: var(--leaf-400);
+}
+.logo {
+  color: var(--green-800);
+}
+.badge-disc {
+  fill: var(--green-badge);
+}
+.badge-ring-line {
+  stroke: var(--paper-warm);
+}
+.brush-bar path {
+  fill: var(--green-700);
+}
+.bowl-icon,
+.badge-leaf {
+  color: var(--paper-warm);
+}
+.fb-icon .fb-tile {
+  fill: var(--brand-facebook);
+}
+.fb-icon .fb-glyph {
+  fill: var(--brand-facebook-glyph);
+}
+.rule-leaf {
+  color: var(--green-800);
+}
+.wash-a {
+  stop-color: var(--wash-100);
+}
+.wash-b {
+  stop-color: var(--wash-200);
+}
+.wash-c {
+  stop-color: var(--wash-300);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: #fff;
+}
+
+/* Two families, one system: Archivo (variable width + weight) for display type
+   that has to be condensed, Oswald for running text. */
+.poster {
+  position: relative;
+  width: 842px;
+  height: 1264px;
+  overflow: hidden;
+  background: var(--paper);
+  font-family: var(--font-text);
+  color: var(--ink);
+}
+
+/* ---------------------------------------------------------------- header -- */
+
+.logo {
+  position: absolute;
+  left: 17px;
+  top: 23px;
+  width: 82px;
+  height: 81px;
+}
+
+.brand {
+  position: absolute;
+  left: 111px;
+  top: 25px;
+  color: var(--green-800);
+}
+.brand-name {
+  font-weight: 700;
+  font-size: 29px;
+  line-height: 29px;
+  letter-spacing: 0.2px;
+}
+.brand-line {
+  font-weight: 500;
+  font-size: 18px;
+  line-height: 22px;
+  letter-spacing: 0.1px;
+}
+.brand-phone {
+  font-size: 17px;
+}
+
+.title-block {
+  position: absolute;
+  left: 208px;
+  top: 66px;
+  width: 480px;
+  text-align: center;
+  color: var(--green-800);
+}
+
+.rule-top {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.rule-top .rule {
+  height: 1.6px;
+  background: var(--green-800);
+  flex: none;
+}
+.rule-top .rule {
+  width: 122px;
+}
+.rule-leaf {
+  margin: 0 16px;
+}
+.rule-leaf {
+  width: 57px;
+  height: 22px;
+  flex: none;
+}
+
+.title {
+  margin: 11px 0 0;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 85px;
+  line-height: 0.8;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  color: var(--green-800);
+}
+
+.date-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 20px;
+}
+.date-rule {
+  width: 58px;
+  height: 1.8px;
+  background: var(--green-800);
+  flex: none;
+}
+.date {
+  font-size: 22px;
+  font-weight: 400;
+  letter-spacing: 0.2px;
+  white-space: nowrap;
+}
+
+/* ----------------------------------------------------------------- badge -- */
+
+.badge {
+  position: absolute;
+  left: 647px;
+  top: 62px;
+  width: 193px;
+  height: 193px;
+}
+.badge-ring {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.badge-text {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--paper-warm);
+  text-align: center;
+  line-height: 1.12;
+}
+.badge-small {
+  font-size: 17px;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+}
+.badge-large {
+  font-size: 38px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  margin-top: 3px;
+}
+.badge-medium {
+  font-size: 21px;
+  font-weight: 500;
+  letter-spacing: 0.4px;
+  position: relative;
+}
+.badge-leaf {
+  position: absolute;
+  right: -28px;
+  bottom: 0;
+  width: 26px;
+  height: 20px;
+}
+
+/* ---------------------------------------------------------------- ticket -- */
+
+.ticket {
+  position: absolute;
+  left: -44px;
+  top: 166px;
+  width: 262px;
+  height: 117px;
+  background: var(--olive-600);
+  border-radius: 12px;
+  transform: rotate(-1.8deg);
+  box-shadow: 5px 7px 0 rgba(150, 140, 110, 0.22);
+}
+.ticket-inner {
+  position: absolute;
+  inset: 7px;
+  padding: 4px 10px 4px 40px;
+  border: 1.5px dashed rgba(243, 239, 226, 0.7);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+}
+.ticket-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+.ticket-label,
+.ticket-price {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--paper-warm);
+  line-height: 1.16;
+  white-space: nowrap;
+}
+
+/* ------------------------------------------------------------------ days -- */
+
+.days {
+  position: absolute;
+  left: 0;
+  top: 298px;
+  width: 800px;
+  height: 810px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.days-divider {
+  position: absolute;
+  left: var(--divider-x);
+  top: -6px;
+  bottom: -4px;
+  width: 1.2px;
+  background: var(--rule-400);
+}
+
+.day {
+  position: relative;
+}
+
+/* Anchored to the dish rows rather than the whole block: in the reference the
+   label tracks the dishes, not the menu row below them. */
+.dishes {
+  position: relative;
+}
+
+.day-label {
+  position: absolute;
+  left: -198px; /* 218 - 198 = page x 20 */
+  top: 50%;
+  margin-top: 4px;
+  transform: translateY(-50%);
+  width: 160px;
+  height: 58px;
+}
+.day-brush {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 160px;
+  height: 58px;
+}
+
+.day-name {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 13px;
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: 31px;
+  font-weight: 600;
+  line-height: 31px;
+  letter-spacing: 0.6px;
+  color: var(--green-800);
+  white-space: nowrap;
+}
+
+.day-rows {
+  margin-left: var(--dish-x);
+  width: 558px;
+  padding-bottom: 15px;
+  border-bottom: 1.2px solid var(--rule-400);
+}
+
+.dish-row,
+.menu-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: var(--row-h);
+  gap: 16px;
+}
+.dish-row {
+  border-bottom: 1px solid var(--rule-200);
+}
+
+.dish-name {
+  font-size: 17.8px;
+  font-weight: 600;
+  letter-spacing: 0;
+  color: var(--ink);
+}
+.dish-price {
+  font-size: 17.8px;
+  font-weight: 600;
+  letter-spacing: 0;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.menu-row {
+  margin-top: 10px;
+  position: relative;
+}
+.menu-row .dish-name,
+.menu-row .dish-price {
+  color: var(--rust-600);
+  font-weight: 500;
+}
+.menu-row .dish-price {
+  font-weight: 700;
+}
+.menu-label {
+  position: absolute;
+  left: -87px;
+  font-size: 21px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  color: var(--rust-600);
+}
+
+/* ------------------------------------------------------------ closed day -- */
+
+/* A closed day keeps its label and its place in the week; the dish column
+   carries the notice instead of rows. Sized near three rows so the block still
+   has presence — the flex distribution absorbs the difference. */
+.closed-panel {
+  height: 84px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  border-radius: 7px;
+  background: var(--wash-100);
+}
+
+.closed-headline {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+.closed-rule {
+  width: 54px;
+  height: 1.6px;
+  background: var(--olive-600);
+  flex: none;
+}
+
+.closed-label {
+  font-family: var(--font-display);
+  font-size: 34px;
+  font-weight: 600;
+  line-height: 34px;
+  letter-spacing: 7px;
+  /* letter-spacing adds a trailing gap; pull it back so the rules sit evenly */
+  margin-right: -7px;
+  color: var(--olive-600);
+}
+
+.closed-note {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 1.7px;
+  color: var(--ink-muted);
+}
+
+/* The wash behind a closed day's name is dialled back a touch, so the week
+   reads at a glance without the label leaving the grid. */
+.day--closed .day-brush {
+  opacity: 0.72;
+}
+
+/* ---------------------------------------------------------------- footer -- */
+
+.takeaway,
+.fb-bar {
+  position: absolute;
+  z-index: 2;
+}
+
+.takeaway {
+  left: 252px;
+  top: 1115px;
+  width: 314px;
+  height: 45px;
+}
+.fb-bar {
+  left: 192px;
+  top: 1192px;
+  width: 441px;
+  height: 63px;
+}
+
+.brush-bar {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.takeaway-content,
+.fb-content {
+  position: relative;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: var(--paper-warm);
+}
+.bowl-icon {
+  width: 30px;
+  height: 27px;
+  flex: none;
+}
+.fb-icon {
+  width: 30px;
+  height: 30px;
+  flex: none;
+}
+.takeaway-text {
+  font-size: 19px;
+  font-weight: 500;
+  letter-spacing: 0.2px;
+}
+.fb-text {
+  font-size: 17px;
+  font-weight: 400;
+  letter-spacing: 0.2px;
+}
+
+/* Photo slots are swappable content. Each is masked with a soft vignette
+   anchored at the corner it bleeds from, so whatever photo is dropped in melts
+   into the paper instead of ending on a hard rectangular edge. object-fit
+   keeps the slot filled whatever aspect ratio arrives. */
+.photo {
+  position: absolute;
+  z-index: 1;
+  object-fit: cover;
+}
+.photo-left {
+  left: 0;
+  top: 1098px;
+  width: 210px;
+  height: 166px;
+  mask-image: radial-gradient(115% 125% at 18% 82%, #000 46%, transparent 86%);
+}
+.photo-right {
+  left: 571px;
+  top: 1097px;
+  width: 271px;
+  height: 167px;
+  mask-image: radial-gradient(115% 125% at 82% 82%, #000 46%, transparent 86%);
+}
+
+/* ----------------------------------------------------------------- decor -- */
+
+.decor {
+  position: absolute;
+}
+.decor-branch {
+  right: 0;
+  top: 0;
+  width: 289px;
+  height: 126px;
+}
+.decor-parsley {
+  left: 508px;
+  top: 1163px;
+  width: 44px;
+  height: 40px;
+  z-index: 2;
+}
